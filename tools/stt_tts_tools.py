@@ -1,32 +1,53 @@
-import whisper
-from gtts import gTTS
-from pydub import AudioSegment
+# tools/stt_tts_tools.py
+
 import os
-TTS_OUTPUT_PATH = "data/temp_audio/ai_response.mp3"
-os.makedirs("data/temp_audio", exist_ok=True)
-whisper_model = None
+from pathlib import Path
+
+# Directory for temporary audio output
+TTS_OUTPUT_DIR = Path("data/temp_audio")
+TTS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+TTS_OUTPUT_PATH = TTS_OUTPUT_DIR / "ai_response.mp3"
+
+
+# ----------------------------------------------------------------
+# TEXT TO SPEECH
+# ----------------------------------------------------------------
+def speak_text(text: str) -> str:
+    """
+    TTS that writes directly to a file. No PortAudio / device I/O.
+    gTTS works fine on Streamlit Cloud.
+    """
+    from gtts import gTTS
+
+    tts = gTTS(text=text, lang="en")
+    tts.save(str(TTS_OUTPUT_PATH))
+    return str(TTS_OUTPUT_PATH)
+
+
+# ----------------------------------------------------------------
+# SPEECH TO TEXT (FILE ONLY)
+# works on cloud because it reads WAV file, not microphone.
+# ----------------------------------------------------------------
+def transcribe_audio(path: str) -> str:
+    """
+    Run STT on a WAV file only. Does not use mic hardware.
+    Modify this to your actual STT implementation.
+    """
+    import whisper
+
+    model = whisper.load_model("base")   # or "tiny", "small", etc.
+    result = model.transcribe(path)
+    text = result.get("text", "")
+    return text.strip()
+
+
+# ----------------------------------------------------------------
+# Optional initialization hook (empty but keeps code compatible)
+# ----------------------------------------------------------------
 def initialize_stt_model():
-    global whisper_model
-    if whisper_model is None:
-        whisper_model = whisper.load_model("base")
-def transcribe_audio(audio_file_path: str) -> str:
-    global whisper_model
-    if whisper_model is None:
-        initialize_stt_model()
-    try:
-        result = whisper_model.transcribe(audio_file_path, fp16=False)
-        transcript = result["text"].strip()
-        return transcript
-    except Exception as e:
-        return ""
-def speak_text(text: str):
-    try:
-        tts = gTTS(text=text, lang='en')
-        tts.save(TTS_OUTPUT_PATH)
-        audio = AudioSegment.from_mp3(TTS_OUTPUT_PATH)
-    except Exception as e:
-        pass
-if __name__ == '__main__':
-    initialize_stt_model()
-    test_text = "Hello there. I am SerenAI, your compassionate wellness companion. How are you feeling today?"
-    speak_text(test_text)
+    """
+    No hardware to initialize in cloud deployments.
+    This function stays for API compatibility.
+    """
+    pass
