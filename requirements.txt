@@ -9,3 +9,4 @@ librosa
 opensmile
 python-dotenv
 pytest
+streamlit-mic-recorder
