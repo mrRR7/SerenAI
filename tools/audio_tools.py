@@ -1,7 +1,6 @@
 import opensmile
 import librosa
 import numpy as np
-import sounddevice as sd
 import scipy.io.wavfile as wavfile
 import os
 import time
