@@ -1,0 +1,11 @@
+google-genai
+openai-whisper
+gTTS
+pydub
+sounddevice
+numpy
+scipy
+librosa
+opensmile
+python-dotenv
+pytest
