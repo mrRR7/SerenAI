@@ -4,8 +4,8 @@ import warnings
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 
 from pathlib import Path
-from dotenv import load_dotenv
-load_dotenv(dotenv_path="./.env")
+import streamlit as st
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 import os
 import base64
@@ -26,7 +26,7 @@ from tools import stt_tts_tools, memory_tools
 # GenAI client (explicit api_key is more reliable inside Streamlit)
 try:
     from google import genai
-    client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    client = genai.Client(api_key=GOOGLE_API_KEY)
 except Exception:
     client = None
 
@@ -276,3 +276,4 @@ with col_right:
                 st.write(f"- {ts} — `{sid}`")
                 if summary:
                     st.write(f"  • {summary}")
+
