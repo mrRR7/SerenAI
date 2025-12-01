@@ -10,3 +10,4 @@ opensmile
 python-dotenv
 pytest
 streamlit-mic-recorder
+ffmpeg-python
